@@ -78,7 +78,7 @@ classdef SMOClassifier < handle
         function obj = train(inX, y, kernel, useCache, kernalCacheSize)
             % Input arguments preprocessing
             if nargin == 2
-                kernel = 'guassian';
+                kernel = 'gaussian';
                 kernalCacheSize = 100;
                 useCache = 1;
             elseif nargin == 3
@@ -131,7 +131,7 @@ classdef SMOClassifier < handle
             
             % Parameters Initialization
             start = tic;
-            CV = model.classify.SMOClassifier.RANSACmed(X, 100, kernel, gamma );
+            CV = model.classify.SMOClassifier.RANSAC(X, 100, kernel, gamma );
             time = toc(start);
             NIter = 1e5;
             A = min(0, y .* CV);
@@ -256,7 +256,7 @@ classdef SMOClassifier < handle
                 alp(idxJ) = alp(idxJ) - y(idxJ)*lambda;
             end
         end
-        function C = RANSACmed(X, RANSACSize, k, gamma)
+        function C = RANSAC(X, RANSACSize, k, gamma)
             % Randomly sample certain size of subset, and find an
             % appropriate C to reduce training time
             if RANSACSize > size(X, 1)

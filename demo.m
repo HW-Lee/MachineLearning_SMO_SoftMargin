@@ -21,7 +21,7 @@ if opt == SMLC
     myClassifier = SoftMarginLinearClassifier.train(X, y, C, 'custom');
 elseif opt == SMOC
     tic;
-    myClassifier = SMOClassifier.train(X, y, 'gaussian');
+    myClassifier = SMOClassifier.train(X, y);
     toc;
     C = myClassifier.C;
 end
@@ -46,6 +46,20 @@ for xx = 1:length(model)
     end
 end
 
+%{
+pts = 400;
+xx = linspace(-100, 80, pts);
+yy = linspace(-150, 150, pts);
+xy = ones(pts^2, 2);
+for ii = 1:pts
+    xy((ii-1)*pts+1:pts*ii, 1) = xx(ii);
+    xy((ii-1)*pts+1:pts*ii, 2) = yy(:);
+end
+xyLabels = myClassifier.predict(xy);
+boundIdx = find(diff(xyLabels)~=0);
+boundxx = .5 * (xy(boundIdx, 1) + xy(boundIdx+1, 1));
+boundyy = .5 * (xy(boundIdx, 2) + xy(boundIdx+1, 2));
+%}
 
 figure();
 hold on;
@@ -54,12 +68,15 @@ plot(X(label1==1,1),X(label1==1,2),'rx');
 plot(X(label1==-1,1),X(label1==-1,2),'bx');
 scatter (X(y==1,1),X(y==1,2),'r');
 scatter(X(y==-1,1),X(y==-1,2),'b');
+%plot(boundxx, boundyy, 'k.');
+legend('predicted+', 'predicted-', 'instance+', 'instance-');
+title('SVM classifier with SMO and Gaussian kernel');
 
 hold off;
 
 
 fprintf('Accuracy: %f\n', sum(label1==y)/length(y));
-return;
+%return;
 %%% plot data %%%
 figure();
 hold on;
@@ -71,7 +88,7 @@ if opt == SMLC
     [w b] = model{2}.computeAffine(X);
     plot(xx, -(w(1)*xx+b)/w(2), 'k');
 else
-    [w b] = myClassifier.computeAffine(X);
+    [w b] = myClassifier.computeAffine();
     plot(xx, -(w(1)*xx+b)/w(2), 'r'); % --> (1)
     idx1 = find(myClassifier.alpha < myClassifier.C & myClassifier.alpha > 0);
     idx2 = find(myClassifier.alpha == myClassifier.C);

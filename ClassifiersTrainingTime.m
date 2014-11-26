@@ -7,7 +7,7 @@ rootPath = 'ML_assignment-04-term-proj-training-data';
 load(fullfile(rootPath, 'X.dat'));
 load(fullfile(rootPath, 'y.dat'));
 
-k = 150;
+k = 200;
 N = 100;
 
 avgs = zeros(N, 5);
